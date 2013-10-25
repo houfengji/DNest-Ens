@@ -46,10 +46,9 @@ int main(void) {
 	//string data_file_name("gliese_581"); size_t num_comp = 3; size_t ens_size = 200; int num_level = 0; size_t step_size = 10;
 	//string data_file_name("gliese_581"); size_t num_comp = 7; size_t ens_size = 200; int num_level = 150; size_t step_size = 10;
 	
-	//string data_file_name("x001"); size_t num_comp = 1; size_t ens_size = 50; int num_level = 150; size_t step_size = 10;
-	string data_file_name("x001"); size_t num_comp = 2; size_t ens_size = 50; int num_level = 150; size_t step_size = 10;
-	//string data_file_name("282"); size_t num_comp = 3; size_t ens_size = 50; int num_level = 150; size_t step_size = 10;
-	//string data_file_name("282"); size_t num_comp = 4; size_t ens_size = 200; int num_level = 0; size_t step_size = 10;
+	//string data_file_name("x001"); size_t num_comp = 0; size_t ens_size = 50; int num_level = 150; size_t step_size = 10;
+	string data_file_name("x001"); size_t num_comp = 1; size_t ens_size = 50; int num_level = 150; size_t step_size = 10;
+	//string data_file_name("x001"); size_t num_comp = 2; size_t ens_size = 50; int num_level = 150; size_t step_size = 10;
 	
 	//string data_file_name("fake4"); size_t num_comp = 3; size_t ens_size = 200; int num_level = 150; size_t step_size = 10;
 	Data data(data_file_name);

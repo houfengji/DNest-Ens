@@ -8,5 +8,4 @@ using namespace std;
 
 double evidence (Model & model, size_t);
 
-
 #endif

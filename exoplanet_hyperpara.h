@@ -7,10 +7,10 @@ using namespace std;
 
 struct ExoplanetHyperpara {
 	ExoplanetHyperpara();
-	vector< vector<double> > uniOrbB;    // uni for uniform prior, Orb for Orbital parameters, B for bounds
-	vector<double> uniJtqB;              // uni for uniform prior, B for bounds,  Jitter squared
-	vector<double> uniV0B;               // uni for uniform prior, B for bounds
-	vector<double> uniV1B;               // uni for uniform prior, B for bounds,  Linear Trend
+	vector< vector<double> > uniOrbB;    // uniform prior, Orb for Orbital parameters, B for bounds
+	vector<double> uniJtqB;              // uniform prior, B for bounds,  Jitter squared
+	vector<double> uniV0B;               // uniform prior, B for bounds
+	vector<double> uniV1B;               // uniform prior, B for bounds,  Linear Trend
 	
 	vector<double> JfOmega;
 	vector<double> JfK;

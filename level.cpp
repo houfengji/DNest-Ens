@@ -59,9 +59,6 @@ void Level::clear_all() {
 }
 
 void Level::pop_one_level() {
-	if (LnLikelihood_var.size() == num_level - 1) {
-		LnLikelihood_var.pop_back();
-	}
 	num_level = num_level - 1;
 	LnThres.pop_back();
 	LnPrims.pop_back();
