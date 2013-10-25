@@ -214,17 +214,14 @@ bool ExoplanetJD::physical (const std::vector<double> & parameter)
 	return 1;
 }
 
-// the prior density function Uniform
+// All uniform priors
+// Which prior is to be used is determined in LnPrior.
+// NOTE: Orbit crossing and companion permutation are not included.
 double ExoplanetJD::LnPrior01 (const vector<double> & parameter)  // All Uniform Dummy Prior 
 {
 
 	vector<double> p(dim, 0);
 	double jacobian = reparametrize(parameter, p);
-	//bool crossed = orbit_cross(parameter);
-	//forbid orbit crossing
-	//if (crossed == 1) {
-		//return -1e300;
-	//}
 	double lpr = 0;
 	for (size_t i = 0; i < num_comp; ++i) {
 		for (size_t j = 0; j < 5; ++j) {  // hard-wired FIVE because there are 5 orbital parameters.
@@ -255,17 +252,14 @@ double ExoplanetJD::LnPrior01 (const vector<double> & parameter)  // All Uniform
 	return lpr;
 }
 
-// the prior density function Uniform
-double ExoplanetJD::LnPrior02 (const vector<double> & parameter)  // All Uniform Dummy Prior 
+// More sensible and informative priors
+// Which prior is to be used is determined in LnPrior.
+// NOTE: Orbit crossing and companion permutation are not included.
+double ExoplanetJD::LnPrior02 (const vector<double> & parameter)  
 {
 
 	vector<double> p(dim, 0);
 	double jacobian = reparametrize(parameter, p);
-	//bool crossed = orbit_cross(parameter);
-	//forbid orbit crossing
-	//if (crossed == 1) {
-		//return -1e300;
-	//}
 	double lpr = 0;
 	for (size_t i = 0; i < num_comp; ++i) {
 		for (size_t j = 0; j < 5; ++j) {  // hard-wired FIVE because there are 5 orbital parameters.
@@ -292,17 +286,18 @@ double ExoplanetJD::LnPrior02 (const vector<double> & parameter)  // All Uniform
 }
 
 // Log Prior with Threshold
+// Determines which prior to be used
+// Orbit crossing and companion permutation are included.
 double ExoplanetJD::LnPrior(const vector<double> & parameter,  // All Uniform Dummy Prior 
                             const size_t j)          // the index of the level
 {
 	if (j >= level.num_level) {
-		cerr << "ExoplanetJD, LnPrior: level index out of range!" << endl;
-		cerr << "Likely the level hasn't been built when called!" << endl;
+		throw( Exception("ExoplanetJD, LnPrior: level index out of range!") );
 	}
-	if (exchange(parameter) == 1) {
+	if ( exchange(parameter) ) {
 		return -1e300;
 	}
-	if (physical(parameter) == 0) {  // unphysical
+	if ( !physical(parameter) ) {
 		return -1e300;   
 	}
 	double LL_star = level.LnThres[j];  // current log likelihood threshold
@@ -316,7 +311,7 @@ double ExoplanetJD::LnPrior(const vector<double> & parameter,  // All Uniform Du
 		vector<double> p(dim, 0);
 		double jacobian = reparametrize(parameter, p);
 	
-		double lpr = LnPrior02(parameter);      // All Uniform Dummy Prior 
+		double lpr = LnPrior02(parameter);      // NOTE: choose prior here
 		return lpr - LX_star;   // X-Value is used a normalization term
 	}
 }
