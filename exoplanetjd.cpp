@@ -2,16 +2,16 @@
  *  Fengji Hou
  *  fh417@nyu.edu
  *  New York University
- *
+ *  This cpp file defines all the member functions in ExoplanetJD class.
  */
  
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
-#include <exception>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 #include "data.h"
@@ -19,6 +19,7 @@
 #include "keplers_eqn.h"
 #include "level.h"
 #include "model.h"
+#include "exception.h"
 #include "exoplanet_hyperpara.h"
 #include "exoplanet_init.h"
 #include "exoplanetjd.h"
@@ -28,12 +29,12 @@ using namespace std;
 
 size_t ExoplanetJD::count_distinction(void) {
 	if (data.num_col == 3) {
-		return 1;
+		return 1; // If there are 3 columns, then the data is single-sourced.
 	}
-	if (data.num_col == 4) {
+	if (data.num_col == 4) { // The 4th column is usually used for distinctions
 		vector<size_t> dist(data.num_row, 0);
 		for (size_t i = 0; i < data.num_row; ++i) {
-			dist[i] = static_cast<size_t>(data.data[i][3]); // data.data[][] is a double matrix.
+			dist[i] = static_cast<size_t>(data.data[i][3]);
 		}
 		
 		vector<size_t> distinctions;
@@ -60,13 +61,9 @@ size_t ExoplanetJD::count_distinction(void) {
 			for (size_t j = 0; j < distinctions.size(); ++j) {
 				if (dist[i] == distinctions[j]) {
 					found = 1;
-					data.data[i][3] = j;
+					data.data[i][3] = j; // re-label the distinctions as 0, 1, 2...
 					break;
 				}
-			}
-			
-			if (found != 1) {
-				cerr << "Couldn't find a distinction index which should have been established!" << endl;
 			}
 		}
 		return distinctions.size();
@@ -90,7 +87,10 @@ ExoplanetJD::ExoplanetJD(Data & dt,                 // Data for likelihood calcu
 	}
 	model_name = "exop_" + data.data_name + "_mod_" + int2str(num_comp);
 	num_d = count_distinction();
-	if (num_d != 1) {
+	if (num_d == 0) {
+		throw( Exception("Data format can not be processed!") );
+	}
+	if (num_d > 1) {
 		model_name = model_name + "_d";
 	}
 	dim = 5 * num_comp + 2 * num_d;
@@ -103,8 +103,11 @@ ExoplanetJD::ExoplanetJD(Data & dt,                 // Data for likelihood calcu
 }
 
 // Reparametrization
+// Good re-parametrization may improve sampling greatly. But in the context of
+// DNS, re-parametrization is not very necessary.
 double ExoplanetJD::reparametrize(const vector<double> & param, vector<double> & p) const
 {
+	//This set of reparametrization was used when we used MCMC for inference.
 	//param_0 = omega
 	//param_1 = sqrt(amplitude) * sin(phi)
 	//param_2 = sqrt(amplitude) * cos(phi)
@@ -163,7 +166,8 @@ bool ExoplanetJD::orbit_cross (const vector<double> & parameter)
 	return 0;
 }
 
-// If the periods of the companions are not in increasing order, return 1.
+// We force the periods of the companions to be in decreasing order (omega in  ascending order).
+// If the periods of the companions are not in ascending order, return 1.
 bool ExoplanetJD::exchange (const vector<double> & parameter) 
 {
 	if (num_comp <= 1) {
@@ -181,6 +185,9 @@ bool ExoplanetJD::exchange (const vector<double> & parameter)
 	return 0;
 }
 
+// This function serves as a sanity check, because we may need to make 
+// likelihood calls when the parameters are not physical, i.e. eccentricity > 1.
+// If we don't make such check, likelihood may behave humorously. 
 // If combinations of parameters are not physical, return 0.
 bool ExoplanetJD::physical (const std::vector<double> & parameter)
 {

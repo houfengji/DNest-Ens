@@ -1,3 +1,12 @@
+/*
+ *  Fengji Hou
+ *  fh417@nyu.edu
+ *  New York University
+ *  The class declared in this header is used to store best-fit parameters, or
+ *  posterior-median parameters, to initialize the ensemble. They can be as
+ *  specific as one wants, but don't have to be.
+ */
+
 #ifndef EXOPLANET_INIT_H
 #define EXOPLANET_INIT_H
 

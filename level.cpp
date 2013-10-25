@@ -3,7 +3,7 @@
  *  fh417@nyu.edu
  *  New York University
  *  Jan 27, 2013
- *  This cpp file defines a simple constructor for Level class.
+ *  This cpp file defines all the members of Level class
  *
  */
  
@@ -11,20 +11,24 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
+#include "exception.h"
 #include "level.h"
+
+using namespace std;
 
 Level::Level(const std::string & type): weight_type(type)
 {
-	num_level = 1;
-	LWeight_norm = 0;
-	LnThres.push_back(-1.0e300);     // no threshold at all
-	LnPrims.push_back(0.);           // The prior mass the lowest level covers is 1.
+	num_level = 1;      // start with one level M_0 = M_0^* = 1, L_0^* = 0
+	LWeight_norm = 0;   // ensure sum of weights is 1
+	exponential_weight_coefficient = 0.5; // go down 2 levels with Prob = exp(-1)
+	LnThres.push_back(-numeric_limits<double>::infinity()); // L_0^* = 0
+	LnPrims.push_back(0.);                                  // M_0 = M_0^* = 1
 	bool updated = update_lweight();
-	exponential_weight_coefficient = 0.5;
 	if (updated == 0) {
-		std::cerr << "Level, Constructor : Updating level weights failed!" << std::endl;
+		throw ( Exception("Level, Constructor : Updating level weights failed!") );
 	}
 }
 
@@ -34,7 +38,7 @@ void Level::add_level(double L, double X) {
 	LnPrims.push_back(X);
 	bool updated = update_lweight();
 	if (updated == 0) {
-		std::cerr << "Level, add_level : Updating level weights failed!" << std::endl;
+		throw ( Exception("Level, add_level : Updating level weights failed!") );
 	}
 }
 
@@ -42,9 +46,8 @@ void Level::change_weight_type (const std::string & type) {
 	bool updated;
 	weight_type = type;
 	updated = update_lweight();
-	
 	if (updated == 0) {
-		std::cerr << "Level, change_weight_type : Updating level weights failed! Type " << type << std::endl;
+		throw ( Exception("Level, change_weight_type : Updating level weights failed! Type " + type) );
 	}
 }
 
@@ -52,9 +55,11 @@ void Level::clear_all() {
 	num_level = 1;
 	LnThres.resize(1);
 	LnPrims.resize(1);
+	LnThres[0] = -numeric_limits<double>::infinity();
+	LnPrims[0] = 0.;
 	bool updated = update_lweight();
 	if (updated == 0) {
-		std::cerr << "Level, Constructor : Updating level weights failed!" << std::endl;
+		throw ( Exception("Level, clear_all : Updating level weights failed!") );
 	}
 }
 
@@ -64,7 +69,7 @@ void Level::pop_one_level() {
 	LnPrims.pop_back();
 	bool updated = update_lweight();
 	if (updated == 0) {
-		std::cerr << "Level, Constructor : Updating level weights failed!" << std::endl;
+		throw ( Exception("Level, pop_one_level : Updating level weights failed!") );
 	}
 }
 
